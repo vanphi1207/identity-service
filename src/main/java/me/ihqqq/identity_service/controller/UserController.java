@@ -1,5 +1,6 @@
 package me.ihqqq.identity_service.controller;
 
+import jakarta.validation.Valid;
 import me.ihqqq.identity_service.dto.request.UserCreationRequest;
 import me.ihqqq.identity_service.dto.request.UserUpdateRequest;
 import me.ihqqq.identity_service.entity.User;
@@ -16,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    User createUser(@RequestBody UserCreationRequest request) {
+    User createUser(@RequestBody @Valid UserCreationRequest request) {
         return userService.createUser(request);
     }
 
