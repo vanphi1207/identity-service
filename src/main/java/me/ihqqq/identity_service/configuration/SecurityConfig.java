@@ -1,6 +1,5 @@
 package me.ihqqq.identity_service.configuration;
 
-import me.ihqqq.identity_service.enums.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect"};
+    private final String[] publicEndpoint = {"/users", "/auth/token", "/auth/introspect"};
 
     @Value("${jwt.signerKey}")
     private String signerKey;
@@ -34,12 +33,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
 
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                request.requestMatchers(HttpMethod.POST, publicEndpoint).permitAll()
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2
                 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
-                .jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 

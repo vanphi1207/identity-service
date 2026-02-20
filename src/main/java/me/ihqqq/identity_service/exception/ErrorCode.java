@@ -1,27 +1,31 @@
 package me.ihqqq.identity_service.exception;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public enum ErrorCode {
-    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error"),
-    INVALID_KEY(1001, "Invalid key"),
-    USER_EXISTED(1002, "User already existed"),
-    USERNAME_INVALID(1003, "Username must be at least 3 characters long"),
-    INVALID_PASSWORD(1004, "Password must be at least 8 characters long"),
-    USER_NOT_EXISTED(1005, "User not existed"),
-    UNAUTHENTICATED(1006, "Unauthenticated")
+    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_KEY(1001, "Invalid key", HttpStatus.BAD_REQUEST),
+    USER_EXISTED(1002, "User already existed", HttpStatus.BAD_REQUEST),
+    USERNAME_INVALID(1003, "Username must be at least 3 characters long", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD(1004, "Password must be at least 8 characters long", HttpStatus.BAD_REQUEST),
+    USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
+    UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN)
     ;
-    private int code;
-    private String message;
 
-    public int getCode() {
-        return code;
-    }
+    int code;
+    String message;
+    HttpStatusCode statusCode;
 
-    public String getMessage() {
-        return message;
-    }
-
-    ErrorCode(int code, String message) {
+    ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;
+        this.statusCode = statusCode;
     }
 }
