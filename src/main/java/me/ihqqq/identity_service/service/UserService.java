@@ -13,6 +13,7 @@ import me.ihqqq.identity_service.enums.Role;
 import me.ihqqq.identity_service.exception.AppException;
 import me.ihqqq.identity_service.exception.ErrorCode;
 import me.ihqqq.identity_service.mapper.UserMapper;
+import me.ihqqq.identity_service.repository.RoleRepository;
 import me.ihqqq.identity_service.repository.UserRepository;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +33,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
 
     public UserResponse createUser(UserCreationRequest request) {
 
@@ -44,7 +45,7 @@ public class UserService {
 
         HashSet<String> roles = new HashSet<>();
         roles.add(Role.USER.name());
-        user.setRoles(roles);
+//        user.setRoles(roles);
 
         return userMapper.toUserResponse(userRepository.save(user));
 
@@ -64,7 +65,13 @@ public class UserService {
     public UserResponse updateUser(String userId ,UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
