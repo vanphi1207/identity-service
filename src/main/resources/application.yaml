@@ -8,6 +8,7 @@ spring:
     name: identity-service
   datasource:
     url: jdbc:mysql://localhost:3306/identity-service
+    driverClassName: "com.mysql.cj.jdbc.Driver"
     username: root
     password: root
   jpa:
@@ -17,3 +18,5 @@ spring:
 
 jwt:
   signerKey: "00597d5df8fff3c1cc2f9e529aff150aff3e118961c267bc919760e3a2dec50e"
+  valid-duration: 3600 #in second
+  refreshable-duration: 36000 #in second
