@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @TestPropertySource("/test.properties")
-public class UserServiceTest {
+class UserServiceTest {
     @Autowired
     private UserService userService;
 
@@ -32,12 +32,12 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     private UserCreationRequest request;
-    private UserResponse userResponse;
+    UserResponse userResponse;
     private User user;
-    private LocalDate dob;
+
     @BeforeEach
-    public void initData() {
-        dob = LocalDate.of(1990, 1, 1);
+    void initData() {
+        LocalDate dob = LocalDate.of(1990, 1, 1);
 
         request = UserCreationRequest.builder()
                 .username("john")
@@ -109,7 +109,7 @@ public class UserServiceTest {
     @Test
     @WithMockUser(username = "john")
     void getMyInfo_userNotFound_error() {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
         var exception = assertThrows(AppException.class,
                 () -> userService.getMyInfo());

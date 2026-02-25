@@ -25,7 +25,7 @@ import java.time.LocalDate;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/test.properties")
-public class UserControllerTest {
+class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,10 +35,10 @@ public class UserControllerTest {
 
     private UserCreationRequest request;
     private UserResponse userResponse;
-    private LocalDate dob;
+
     @BeforeEach
-    public void initData() {
-        dob = LocalDate.of(1990, 1, 1);
+    void initData() {
+        LocalDate dob = LocalDate.of(1990, 1, 1);
 
         request = UserCreationRequest.builder()
                 .username("john")

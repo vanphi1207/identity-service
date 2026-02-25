@@ -2,7 +2,6 @@ package me.ihqqq.identity_service.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import me.ihqqq.identity_service.entity.Role;
 
 import java.time.LocalDate;
 import java.util.Set;
