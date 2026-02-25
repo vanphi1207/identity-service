@@ -3,7 +3,6 @@ package me.ihqqq.identity_service.configuration;
 import com.nimbusds.jose.JOSEException;
 import me.ihqqq.identity_service.dto.request.IntrospectRequest;
 import me.ihqqq.identity_service.service.AuthenticationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -21,10 +20,13 @@ public class CustomJwtDecoder implements JwtDecoder {
     @Value("${jwt.signerKey}")
     private String signerKey;
 
-    @Autowired
-    private AuthenticationService authenticationService;
 
-    private NimbusJwtDecoder nimbusJwtDecoder = null;
+    AuthenticationService authenticationService;
+    NimbusJwtDecoder nimbusJwtDecoder = null;
+
+    public CustomJwtDecoder(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     public Jwt decode(String token) throws JwtException {

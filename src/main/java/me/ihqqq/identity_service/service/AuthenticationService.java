@@ -45,15 +45,15 @@ public class AuthenticationService {
 
     @NonFinal
     @Value("${jwt.signerKey}")
-    protected String SIGNERKEY;
+    protected String signerkey;
 
     @NonFinal
     @Value("${jwt.valid-duration}")
-    protected long VALID_DURATION;
+    protected long validDuration;
 
     @NonFinal
     @Value("${jwt.refreshable-duration}")
-    protected long REFRESHABLE_DURATION;
+    protected long refreshableDuration;
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
@@ -140,13 +140,13 @@ public class AuthenticationService {
             throws JOSEException, ParseException {
 
 
-        JWSVerifier verifier = new MACVerifier(SIGNERKEY.getBytes());
+        JWSVerifier verifier = new MACVerifier(signerkey.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         Date expirationTime = (isRefresh)
                 ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
-                    .toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
+                    .toInstant().plus(refreshableDuration, ChronoUnit.SECONDS).toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
@@ -168,7 +168,7 @@ public class AuthenticationService {
                 .subject(user.getUsername())
                 .issuer("ihqqq.me")
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(validDuration, ChronoUnit.SECONDS).toEpochMilli()))
                 .claim("scope", buildScope(user))
                 .jwtID(UUID.randomUUID().toString())
                 .build();
@@ -177,7 +177,7 @@ public class AuthenticationService {
 
         JWSObject jwtObject = new JWSObject(header, payload);
 
-        jwtObject.sign(new MACSigner(SIGNERKEY.getBytes()));
+        jwtObject.sign(new MACSigner(signerkey.getBytes()));
 
         return jwtObject.serialize();
 

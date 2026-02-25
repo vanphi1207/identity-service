@@ -1,6 +1,8 @@
 package me.ihqqq.identity_service.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,14 +19,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
 
     private final String[] publicEndpoint = {"/users", "/auth/token", "/auth/introspect"
             , "/auth/logout", "/auth/refresh"};
 
 
-    @Autowired
-    private CustomJwtDecoder customJwtDecoder;
+    CustomJwtDecoder customJwtDecoder;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
