@@ -74,6 +74,7 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws JOSEException {
+
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 

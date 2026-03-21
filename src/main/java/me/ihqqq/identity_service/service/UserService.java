@@ -50,7 +50,6 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-
         return userMapper.toUserResponse(user);
 
     }

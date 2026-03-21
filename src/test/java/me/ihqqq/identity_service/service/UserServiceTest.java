@@ -1,24 +1,31 @@
 package me.ihqqq.identity_service.service;
 
 import me.ihqqq.identity_service.dto.request.UserCreationRequest;
+import me.ihqqq.identity_service.dto.request.UserUpdateRequest;
 import me.ihqqq.identity_service.dto.response.UserResponse;
+import me.ihqqq.identity_service.entity.Role;
 import me.ihqqq.identity_service.entity.User;
 import me.ihqqq.identity_service.exception.AppException;
+import me.ihqqq.identity_service.exception.ErrorCode;
+import me.ihqqq.identity_service.mapper.UserMapper;
+import me.ihqqq.identity_service.repository.RoleRepository;
 import me.ihqqq.identity_service.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -31,13 +38,30 @@ class UserServiceTest {
     @MockitoBean
     private UserRepository userRepository;
 
+    @MockitoBean
+    private RoleRepository roleRepository;
+
+    @MockitoBean
+    private PasswordEncoder passwordEncoder;
+
+    private UserUpdateRequest updateRequest;
     private UserCreationRequest request;
-    UserResponse userResponse;
+    private UserResponse userResponse;
     private User user;
+    private Role role;
+
+    @Autowired
+    private UserMapper userMapper;
+
+
 
     @BeforeEach
     void initData() {
         LocalDate dob = LocalDate.of(1990, 1, 1);
+
+        role = Role.builder()
+                .name("USER")
+                .build();
 
         request = UserCreationRequest.builder()
                 .username("john")
@@ -45,6 +69,13 @@ class UserServiceTest {
                 .lastName("Doe")
                 .password("12345678")
                 .dob(dob)
+                .build();
+
+        updateRequest = UserUpdateRequest.builder()
+                .firstName("John1")
+                .lastName("Doe1")
+                .password("123456781")
+                .roles(List.of("USER"))
                 .build();
 
         userResponse = UserResponse.builder()
@@ -62,6 +93,8 @@ class UserServiceTest {
                 .lastName("Doe")
                 .dob(dob)
                 .build();
+
+
     }
 
     @Test
@@ -83,7 +116,9 @@ class UserServiceTest {
     @Test
     void createUser_userExisted_fail() {
         //GIVEN
-        when(userRepository.existsByUsername(anyString())).thenReturn(true);
+        String errorCode = ErrorCode.USER_EXISTED.getMessage();
+        when(userRepository.save(any()))
+                .thenThrow(new DataIntegrityViolationException(errorCode));
 
         //WHEN
         var exception = assertThrows(AppException.class,

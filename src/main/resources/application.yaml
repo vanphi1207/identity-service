@@ -7,16 +7,16 @@ spring:
   application:
     name: identity-service
   datasource:
-    url: jdbc:mysql://localhost:3306/identity-service
+    url: ${DEV_DBMS_CONNECTION:jdbc:mysql://localhost:3306/identity-service}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    username: root
-    password: root
+    username: ${DEV_DBMS_USERNAME:root}
+    password: ${DEV_DBMS_PASSWORD:root}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
 
 jwt:
-  signerKey: "00597d5df8fff3c1cc2f9e529aff150aff3e118961c267bc919760e3a2dec50e"
+  signerKey: ${DEV_SIGNERKEY:f7fc18c45476e0082feea9258bfeb787949bed58d8e00a39df56c13ac0cf57d6}
   valid-duration: 3600 #in second
   refreshable-duration: 36000 #in second
