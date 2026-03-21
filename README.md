@@ -27,27 +27,49 @@ Identity Service is a self-contained authentication and authorization microservi
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Identity Service                     │
-│                                                         │
-│  ┌──────────────┐    ┌──────────────┐    ┌───────────┐  │
-│  │  Controllers │───▶│   Services   │───▶│   JPA     │  │
-│  │  /auth       │    │  Auth        │    │Repositorie│  │
-│  │  /users      │    │  User        │    └─────┬─────┘  │
-│  │  /roles      │    │  Role        │          │        │
-│  │  /permissions│    │  Permission  │    ┌─────▼─────┐  │
-│  └──────┬───────┘    └──────┬───────┘    │  MySQL /  │  │
-│         │                   │            │  H2 (test)│  │
-│  ┌──────▼───────────────────▼───────┐    └───────────┘  │
-│  │         Security Layer           │                   │
-│  │  JWT Filter → CustomJwtDecoder   │                   │
-│  │  Method Security (@Pre/@Post)    │                   │
-│  └──────────────────────────────────┘                   │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Client(["🌐 Client"])
+
+    subgraph Security ["🔒 Security Layer"]
+        direction LR
+        JWTFilter["JWT Filter\n+ CustomJwtDecoder"]
+        MethodSec["Method Security\n@PreAuthorize / @PostAuthorize"]
+    end
+
+    subgraph Controllers ["📡 Controllers"]
+        direction TB
+        AuthCtrl["/auth\ntoken · introspect · logout · refresh"]
+        UserCtrl["/users\nCRUD · myInfo"]
+        RoleCtrl["/roles"]
+        PermCtrl["/permissions"]
+    end
+
+    subgraph Services ["⚙️ Services"]
+        direction TB
+        AuthSvc["AuthenticationService\nJWT sign · verify · revoke"]
+        UserSvc["UserService"]
+        RoleSvc["RoleService"]
+        PermSvc["PermissionService"]
+    end
+
+    subgraph Persistence ["🗄️ Persistence"]
+        direction TB
+        Repos["Spring Data JPA\nRepositories"]
+        DB[("MySQL\n──────\nH2 (test)")]
+    end
+
+    Client --> Security
+    Security --> Controllers
+    AuthCtrl --> AuthSvc
+    UserCtrl --> UserSvc
+    RoleCtrl --> RoleSvc
+    PermCtrl --> PermSvc
+    Services --> Repos
+    Repos --> DB
 ```
 
-The service follows a layered architecture — **Controller → Service → Repository** — with MapStruct for DTO mapping and Spring Security for stateless JWT authentication.
+The service follows a layered architecture — **Controller → Service → Repository** — with Spring Security sitting at the entry point for every authenticated request, and MapStruct handling all DTO mapping between layers.
 
 ---
 
