@@ -65,6 +65,7 @@ public class UserService {
 
     }
 
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateUser(String userId ,UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -85,7 +86,6 @@ public class UserService {
                 .map(userMapper::toUserResponse).toList();
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUserById(String id) {
         log.info("In method get User by id");
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(()
