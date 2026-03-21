@@ -32,8 +32,8 @@ Identity Service is a self-contained authentication and authorization microservi
 │                    Identity Service                     │
 │                                                         │
 │  ┌──────────────┐    ┌──────────────┐    ┌───────────┐  │
-│  │  Controllers │───▶│   Services   │───▶│   JPA     │ │
-│  │  /auth       │    │  Auth        │    │Repositories│ │
+│  │  Controllers │───▶│   Services   │───▶│   JPA     │  │
+│  │  /auth       │    │  Auth        │    │Repositorie│  │
 │  │  /users      │    │  User        │    └─────┬─────┘  │
 │  │  /roles      │    │  Role        │          │        │
 │  │  /permissions│    │  Permission  │    ┌─────▼─────┐  │
